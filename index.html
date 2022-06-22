@@ -159,7 +159,7 @@ dams = L.geoJson.ajax("assets/studieddams.geojson",{
       var id = 0;
       return L.marker(latlng, {icon: L.divIcon({className: 'fas fa-times-circle marker-color-' + (id + 1).toString() })});
   },
-    attribution: 'Closure Data &copy; <a href="https://www.billboard.com/articles/business/touring/9451748/venues-closing-coronavirus-america-list/" style="color:#269c19;" target="_blank">Billboard</a> | States Shapefile &copy; US Census Bureau | Base Map &copy; CartoDB | Map: Josh Platt'
+    attribution: 'Dam Data &copy; <a href="https://www.americanrivers.org/conservation-resource/american-rivers-dam-removal-database-now-available-public/" style="color:#269c19;" target="_blank">American Rivers</a>, <a href="https://www.sciencebase.gov/catalog/item/5ace95e3e4b0e2c2dd1a688f" style="color:#269c19;" target="_blank">USGS DRIP</a>, & <a href="https://nid.usace.army.mil/#/" style="color:#269c19;" target="_blank">USACE</a> | States Shapefile &copy; US Census Bureau | Base Map &copy; CartoDB | Map: Josh Platt
 }).addTo(mymap);
 
 
