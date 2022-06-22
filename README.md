@@ -1,2 +1,3 @@
 # damremovals
-Dam Removal Database and Web Map
+
+Dam Removal Database and Web Map.
