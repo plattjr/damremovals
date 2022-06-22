@@ -152,7 +152,7 @@ dams = L.geoJson.ajax("assets/studieddams.geojson",{
 
   // The content of the popup window is the values of VENUE CITY STATE from the attribute table
   onEachFeature: function (feature, layer) {
-      layer.bindPopup(feature.properties.STATE + "<BR>" + feature.properties.RIVER + ", " + feature.properties.LOCATION);
+      layer.bindPopup(feature.properties.NAME + "<BR>" + feature.properties.RIVER + "<BR>" + feature.properties.LOCATION);
   },
 
   pointToLayer: function(feature, latlng) {
