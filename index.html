@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Dam Removal Database</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.0/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.14.0/css/all.css">
+    <style>
+        html, body,
+
+        #map {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            background: #0000000; }
+
+        .legend {
+            line-height: 40px;
+            font-size: 16px;
+            font-family: 'Helvetica', sans-serif;
+            width: 190px;
+            color: #ffffff;
+            padding: 8px 20px;
+            background: grey;
+            background: rgba(18,17,17,0.9);
+            box-shadow: 0 0 15px rgba(100,100,100,0.2);
+            border-radius: 5px;
+        }
+
+        .legend i {
+            width: 20px;
+            height: 20px;
+            float: left;
+            margin-right: 8px;
+            opacity: 1;
+        }
+
+        .legend img {
+            width: 20px;
+            height: 8px;
+            margin-right: 10px;
+            float: left;
+        }
+
+        .legend p {
+            font-size: 14px;
+            line-height: 25px;
+            margin: 0;
+        }
+
+        body {
+          margin:0;
+          padding:0;
+          font-family:
+          sans-serif;
+          }
+
+        h1 {
+          position: absolute;
+          left: 50px;
+          top: 10px;
+          padding: 8px 2%;
+          margin: 0;
+          background: ;
+          box-shadow: 0 0 15px rgba(0,0,0,0.2);
+          border-radius: 3px;
+          color: whitesmoke;
+          font-size: 1em;
+          z-index: 800;
+        }
+
+          section {
+      			position: absolute;
+      			bottom: 0;
+      			left: 10px;
+      			width: 250px;
+            color: #7b7b7b;
+      			margin: 20px auto;
+      			padding: 0 15px;
+      			background: rgba(18,17,17,0.9);
+      			border-radius: 3px;
+      			z-index: 800;
+      		}
+
+      		p {
+      			font-size: .9em;
+      			line-height: 1.5em;
+      		}
+
+      		a {
+      			color: #005daa;
+      			text-decoration: none;
+      		}
+
+      		a:hover {
+      			text-decoration: underline;
+      		}
+
+    </style>
+    <link href="https://fonts.googleapis.com/css?family=Helvetica" rel="stylesheet">
+    <script src="https://unpkg.com/leaflet@1.7.0/dist/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-ajax/2.1.0/leaflet.ajax.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chroma-js/1.3.4/chroma.min.js"></script>
+</head>
+<body>
+
+  <h1><img src="assets/logo.png" width="180"></h1>
+
+
+<!-- web map and content will go here -->
+<div id="map"></div>
+
+  <section>
+  		<h4>How to Use the Dam Removal Database</h4><hr>
+      <p>Text on how map can be utilized
+      </p>
+  		<p>New paragraph if needed
+      </p>
+  </section>
+
+<script>
+    // 1. Create a map object.
+    var mymap = L.map('map', {
+      center: [38.0, -99.3],
+      zoom: 5, //starting zoom level of the map
+      maxZoom: 18,//maximum zoom level
+      minZoom: 0,//minimum zoom level
+      detectRetina: true // detect whether the sceen is high resolution or not.
+});
+
+// 2. Add a base map.
+var CartoDB_DarkMatter = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+	subdomains: 'abcd',
+	maxZoom: 19
+}).addTo(mymap);
+
+// Null variable that will hold dams
+var dams = null;
+
+var colors = chroma.scale('Reds').mode('lch').colors(7);
+
+
+
+for (i = 0; i < 3; i++) {
+    $('head').append($("<style> .marker-color-" + (i + 1).toString() + " { color: " + colors[i] + "; font-size: 20px; opacity: 0.5; text-shadow: 0 0 1px #ffffff;} </style>"));
+}
+
+
+// Get GeoJSON for dams
+dams = L.geoJson.ajax("assets/studieddams.geojson",{
+
+  // The content of the popup window is the values of VENUE CITY STATE from the attribute table
+  onEachFeature: function (feature, layer) {
+      layer.bindPopup(feature.properties.STATE + "<BR>" + feature.properties.RIVER + ", " + feature.properties.LOCATION);
+  },
+
+  pointToLayer: function(feature, latlng) {
+      var id = 0;
+      return L.marker(latlng, {icon: L.divIcon({className: 'fas fa-times-circle marker-color-' + (id + 1).toString() })});
+  },
+    attribution: 'Closure Data &copy; <a href="https://www.billboard.com/articles/business/touring/9451748/venues-closing-coronavirus-america-list/" style="color:#269c19;" target="_blank">Billboard</a> | States Shapefile &copy; US Census Bureau | Base Map &copy; CartoDB | Map: Josh Platt'
+}).addTo(mymap);
+
+
+colors = chroma.scale('RdYlGn').colors(5);
+
+function setColor(density) {
+    var id = 0;
+    if (density > 4) { id = 1; }
+    else if (density > 2 && density <= 4) { id = 2; }
+    else { id = 3; }
+    return colors[id];
+}
+
+function style(feature) {
+    return {
+      fillColor: setColor(feature.properties.open),
+      fillOpacity: 0.2,
+      weight: 1,
+      opacity: .8,
+      color: 'grey',
+      dashArray: '5'
+    };
+}
+
+
+L.geoJson.ajax("assets/states.geojson", {
+    style: style
+}).addTo(mymap);
+
+
+// 9. Create Leaflet Control Object for Legend
+var legend = L.control({position: 'bottomright'});
+
+// 10. Function that runs when legend is added to map
+legend.onAdd = function () {
+
+    var div = L.DomUtil.create('div', 'legend');
+
+      div.innerHTML += '<b>Dams Removed<b><br />';
+      div.innerHTML += '<i class="fas fa-times-circle marker-color-1"></i><p>Water Quality Study</p>';
+      div.innerHTML += '<i class="fas fa-times-circle marker-color-2"></i><p>Geomorphological Study</p>';
+      div.innerHTML += '<i class="fas fa-times-circle marker-color-3"></i><p>Biological Study Study</p>';
+      div.innerHTML += '<p></p>';
+      div.innerHTML += '<p></p>';
+      div.innerHTML += '<hr><b>Ecoregions?</b><br />';
+      div.innerHTML += '<i style="background: ' + colors[3] + '; opacity: 0.5"></i><p>Region 1</p>';
+      div.innerHTML += '<i style="background: ' + colors[2] + '; opacity: 0.5"></i><p>Region 2</p>';
+
+    return div;
+};
+
+// Add a legend to map
+legend.addTo(mymap);
+
+// Add a scale bar to map
+L.control.scale({position: 'topright'}).addTo(mymap);
+
+
+
+</script>
+</body>
+</html>
